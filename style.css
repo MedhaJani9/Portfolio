@@ -285,7 +285,10 @@ section {
 }
 
 .about-pic {
-  border-radius: 2rem;
+  display: flex;
+  height: 300px;
+  width: 300px;
+  margin: auto 0;
 }
 
 .arrow {
