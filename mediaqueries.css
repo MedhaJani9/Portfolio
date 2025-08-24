@@ -1,7 +1,7 @@
 @media screen and (max-width: 1400px) {
   #profile {
-    height: 83vh;
-    margin-bottom: 6rem;
+    height: 70vh;
+    margin-bottom: 0.5rem;
   }
   .about-containers {
     flex-wrap: wrap;
@@ -21,7 +21,7 @@
   }
   #experience,
   .experience-details-container {
-    margin-top: 2rem;
+    margin-top: 1rem;
   }
   #profile,
   .section-container {
@@ -35,7 +35,7 @@
     height: fit-content;
   }
   section {
-    margin: 0 5%;
+    margin: 0 3%;
   }
   .section__pic-container {
     width: 275px;
