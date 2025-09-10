@@ -384,6 +384,21 @@ article .icon {
   border-color: rgb(163, 163, 163);
 }
 
+
+/* Blog SECTION */
+.blog-title a {
+  text-decoration: none;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.blog-title a:hover {
+  color: #0077cc;
+}
+.blog-excerpt {
+  color: #666;
+  line-height: 1.6;
+}
 /* CONTACT */
 
 #contact {
