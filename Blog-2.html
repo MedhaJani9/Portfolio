@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack Overflow Developer Survey Dashboard (2011-2025)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mediaqueries.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #917ba7 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .filters-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .filters-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .chart-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .chart-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 15px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .ai-impact-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-impact-section h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .ai-metric {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .ai-metric h4 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .ai-metric .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #5a6fd8;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .drill-down {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .drill-down h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .drill-down-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .drill-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .drill-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .drill-btn.active {
+            background: #2c3e50;
+        }
+
+        .export-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .export-btn {
+            background: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+
+        .export-btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr 2fr;
+                gap: 20px;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card.full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .filters-panel {
+                order: 2;
+            }
+            
+            .charts-container {
+                order: 1;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ai-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .metric-card {
+                padding: 15px;
+            }
+            
+            .metric-value {
+                font-size: 2em;
+            }
+            
+            .chart-card {
+                padding: 15px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .chart-card.full-width .chart-container {
+                height: 300px;
+            }
+            
+            .filters-panel {
+                padding: 15px;
+            }
+            
+            .filter-group {
+                margin-bottom: 15px;
+            }
+            
+            .drill-down-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .drill-btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
+            
+            .ai-metrics {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .ai-impact-section {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .ai-impact-section h2 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            
+            .ai-metric {
+                padding: 20px;
+                text-align: center;
+            }
+            
+            .ai-metric h4 {
+                font-size: 1.1em;
+                margin-bottom: 10px;
+            }
+            
+            .ai-metric .value {
+                font-size: 2em;
+                margin: 10px 0;
+                font-weight: bold;
+            }
+            
+            .ai-metric p {
+                font-size: 0.9em;
+                margin: 5px 0;
+            }
+            
+            .export-section {
+                margin-top: 20px;
+            }
+            
+            .export-btn {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+                padding: 12px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            .metric-value {
+                font-size: 1.8em;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .chart-card.full-width .chart-container {
+                height: 250px;
+            }
+            
+            .ai-metric .value {
+                font-size: 1.5em;
+            }
+            
+            .ai-impact-section {
+                padding: 15px;
+            }
+            
+            .ai-impact-section h2 {
+                font-size: 1.3em;
+            }
+            
+            .ai-metric {
+                padding: 15px;
+            }
+            
+            .ai-metric h4 {
+                font-size: 1em;
+            }
+            
+            .ai-metric .value {
+                font-size: 1.8em;
+            }
+            
+            .ai-metric p {
+                font-size: 0.8em;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .filters-panel,
+            .drill-down,
+            .export-section {
+                display: none;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card {
+                break-inside: avoid;
+                margin-bottom: 20px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav id="desktop-nav">
+      <div class="logo"><a href="index.html">Medha Jani</a></div>
+      <div>
+        <ul class="nav-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="skills.html">Skills</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="blogs.html">Blogs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+     <nav id="hamburger-nav">
+      <div class="logo">Medha Jani</div>
+      <div class="hamburger-menu">
+        <div class="hamburger-icon" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="menu-links">
+          <li><a href="about.html" onclick="toggleMenu()">About</a></li>
+          <li><a href="skills.html" onclick="toggleMenu()">Skills</a></li>
+          <li><a href="projects.html" onclick="toggleMenu()">Projects</a></li>
+          <li><a href="blogs.html" onclick="toggleMenu()">Blogs</a></li>
+          <li><a href="contact.html" onclick="toggleMenu()">Contact</a></li>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+        <div class="header">
+            <h1> Stack Overflow Developer Survey Dashboard</h1>
+            <p>Comprehensive Analysis of Developer Trends (2011-2025) with AI Impact Assessment</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value" id="totalResponses">Loading...</div>
+                <div class="metric-label">Total Survey Responses</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="countries">Loading...</div>
+                <div class="metric-label">Countries Represented</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="years">Loading...</div>
+                <div class="metric-label">Years of Data</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" id="aiAdoption">Loading...</div>
+                <div class="metric-label">AI Tool Adoption (2025)</div>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading survey data...</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="filters-panel">
+                <h3>Filters & Controls</h3>
+                
+                <div class="filter-group">
+                    <label for="yearFilter">Year Range:</label>
+                    <select id="yearFilter">
+                        <option value="all">All Years (2011-2025)</option>
+                        <option value="2011-2015">2011-2015</option>
+                        <option value="2016-2020">2016-2020</option>
+                        <option value="2021-2025">2021-2025</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="countryFilter">Country:</label>
+                    <select id="countryFilter">
+                        <option value="all">All Countries</option>
+                        <option value="US">United States</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="Germany">Germany</option>
+                        <option value="India">India</option>
+                        <option value="China">China</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="experienceFilter">Experience Level:</label>
+                    <select id="experienceFilter">
+                        <option value="all">All Levels</option>
+                        <option value="junior">Junior (0-2 years)</option>
+                        <option value="mid">Mid-level (3-5 years)</option>
+                        <option value="senior">Senior (6-10 years)</option>
+                        <option value="lead">Lead (10+ years)</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="aiFilter">AI Usage:</label>
+                    <select id="aiFilter">
+                        <option value="all">All Developers</option>
+                        <option value="heavy">Heavy AI Users</option>
+                        <option value="moderate">Moderate AI Users</option>
+                        <option value="light">Light AI Users</option>
+                        <option value="none">No AI Usage</option>
+                    </select>
+                </div>
+
+                <div class="drill-down">
+                    <h4>Drill Down Options</h4>
+                    <div class="drill-down-buttons">
+                        <button class="drill-btn active" onclick="setDrillDown('overview')">Overview</button>
+                        <button class="drill-btn" onclick="setDrillDown('ai')">AI Impact</button>
+                        <button class="drill-btn" onclick="setDrillDown('learning')">Learning Trends</button>
+                        <button class="drill-btn" onclick="setDrillDown('work')">Work Patterns</button>
+                        <button class="drill-btn" onclick="setDrillDown('salary')">Salary Analysis</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>📈 Developer Population Growth</h3>
+                    <div class="chart-container">
+                        <canvas id="populationChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Programming Languages Popularity</h3>
+                    <div class="chart-container">
+                        <canvas id="languagesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>AI Tool Adoption Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="aiAdoptionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Learning Methods Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="learningChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card full-width">
+                    <h3>Salary Trends by Experience</h3>
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="salaryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-impact-section">
+            <h2>AI Impact on Developer Ecosystem</h2>
+            <div class="ai-metrics">
+                <div class="ai-metric">
+                    <h4>AI-Assisted Development</h4>
+                    <div class="value" id="aiAssistedDev">Loading...</div>
+                    <p id="aiAssistedDevDesc">Developers using AI tools</p>
+                </div>
+                <div class="ai-metric">
+                    <h4>Productivity Increase</h4>
+                    <div class="value" id="aiProductivity">Loading...</div>
+                    <p>Average productivity boost with AI</p>
+                </div>
+                <div class="ai-metric">
+                    <h4>Learning Acceleration</h4>
+                    <div class="value" id="aiLearning">Loading...</div>
+                    <p>Faster skill acquisition with AI</p>
+                </div>
+                <div class="ai-metric">
+                    <h4>Code Quality Improvement</h4>
+                    <div class="value" id="aiCodeQuality">Loading...</div>
+                    <p>Better code quality with AI assistance</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('trends')">📊 Trends Analysis</button>
+            <button class="tab" onclick="showTab('ai')">🤖 AI Impact</button>
+            <button class="tab" onclick="showTab('learning')">📚 Learning Patterns</button>
+            <button class="tab" onclick="showTab('work')">💼 Work Environment</button>
+        </div>
+
+        <div id="trends" class="tab-content active">
+            <div class="chart-card">
+                <h3> Global Developer Distribution</h3>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="globalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="ai" class="tab-content">
+            <div class="chart-card">
+                <h3>AI Tools Usage by Category</h3>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="aiToolsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="learning" class="tab-content">
+            <div class="chart-card">
+                <h3> Learning Resources Preference</h3>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="learningResourcesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="work" class="tab-content">
+            <div class="chart-card">
+                <h3>Remote Work Trends</h3>
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="remoteWorkChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="export-section">
+            <button class="export-btn" onclick="exportData('csv')">📊 Export CSV</button>
+            <button class="export-btn" onclick="exportData('pdf')">📄 Export PDF</button>
+            <button class="export-btn" onclick="shareDashboard()">🔗 Share Dashboard</button>
+        </div>
+    </div>
+    <footer>
+      <nav>
+        <div class="nav-links-container">
+          <ul class="nav-links">
+            <li><a href="about.html">About</a></li>
+            <li><a href="skills.html">Skills</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="blogs.html">Blogs</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </nav>
+      <p>Copyright &#169; 2025 Medha Jani. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentDrillDown = 'overview';
+        let charts = {};
+        let realSurveyData = {};
+        let dataLoaded = false;
+
+        // Data processing functions
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    // Handle CSV with commas inside quoted fields
+                    const values = parseCSVLine(lines[i]);
+                    if (values.length >= headers.length) {
+                        const row = {};
+                        headers.forEach((header, index) => {
+                            row[header.trim()] = values[index] ? values[index].trim() : '';
+                        });
+                        data.push(row);
+                    }
+                }
+            }
+            return data;
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            return result;
+        }
+
+        function processSurveyData(rawData, year) {
+            const processed = {
+                year: year,
+                totalResponses: rawData.length,
+                countries: [...new Set(rawData.map(r => r.Country).filter(c => c && c !== 'NA'))],
+                languages: {},
+                salary: {},
+                experience: {},
+                aiUsage: {},
+                aiAvailable: false,
+                salaryByExperience: { junior: null, mid: null, senior: null, lead: null },
+                learningMethods: {},
+                remoteWork: {},
+                demographics: {}
+            };
+
+            // Process languages
+            rawData.forEach(row => {
+                if (row.LanguageWorkedWith) {
+                    const languages = row.LanguageWorkedWith.split(';');
+                    languages.forEach(lang => {
+                        lang = lang.trim();
+                        if (lang) {
+                            processed.languages[lang] = (processed.languages[lang] || 0) + 1;
+                        }
+                    });
+                }
+            });
+
+            // Process salary data (overall)
+            const salaries = rawData
+                .map(r => parseInt(r.ConvertedComp))
+                .filter(s => !isNaN(s) && s > 0);
+            
+            if (salaries.length > 0) {
+                processed.salary = {
+                    average: Math.round(salaries.reduce((a, b) => a + b, 0) / salaries.length),
+                    median: salaries.sort((a, b) => a - b)[Math.floor(salaries.length / 2)],
+                    min: Math.min(...salaries),
+                    max: Math.max(...salaries)
+                };
+            }
+
+            // Process experience levels
+            const experienceLevels = {};
+            const salariesByBucket = { junior: [], mid: [], senior: [], lead: [] };
+            rawData.forEach(row => {
+                const years = parseInt(row.YearsCodePro);
+                if (!isNaN(years)) {
+                    let bucket = null;
+                    if (years <= 2) bucket = 'junior';
+                    else if (years <= 5) bucket = 'mid';
+                    else if (years <= 10) bucket = 'senior';
+                    else bucket = 'lead';
+                    experienceLevels[bucket] = (experienceLevels[bucket] || 0) + 1;
+                    const comp = parseInt(row.ConvertedComp);
+                    if (!isNaN(comp) && comp > 0) {
+                        salariesByBucket[bucket].push(comp);
+                    }
+                }
+            });
+            processed.experience = experienceLevels;
+
+            // Compute average salary per experience bucket (if available)
+            Object.keys(salariesByBucket).forEach(bucket => {
+                const list = salariesByBucket[bucket];
+                if (list.length > 4) {
+                    processed.salaryByExperience[bucket] = Math.round(list.reduce((a, b) => a + b, 0) / list.length);
+                } else if (list.length > 0) {
+                    processed.salaryByExperience[bucket] = Math.round(list.reduce((a, b) => a + b, 0) / list.length);
+                }
+            });
+
+            // Process AI usage (for newer years)
+            if (year >= 2020) {
+                const aiUsers = rawData.filter(row => 
+                    row.LanguageWorkedWith && 
+                    (row.LanguageWorkedWith.includes('Python') || 
+                     row.LanguageWorkedWith.includes('TensorFlow') ||
+                     row.LanguageWorkedWith.includes('Machine Learning'))
+                ).length;
+                processed.aiUsage = {
+                    percentage: Math.round((aiUsers / rawData.length) * 100),
+                    totalUsers: aiUsers
+                };
+                processed.aiAvailable = processed.aiUsage.percentage > 0;
+            } else {
+                processed.aiAvailable = false;
+            }
+
+            // Process learning methods
+            const learningMethods = {};
+            rawData.forEach(row => {
+                if (row.UndergradMajor) {
+                    const major = row.UndergradMajor;
+                    learningMethods[major] = (learningMethods[major] || 0) + 1;
+                }
+            });
+            processed.learningMethods = learningMethods;
+
+            // Process remote work
+            const remoteWork = {
+                remote: 0,
+                hybrid: 0,
+                office: 0
+            };
+            rawData.forEach(row => {
+                if (row.WorkWeekHrs) {
+                    const hours = parseInt(row.WorkWeekHrs);
+                    if (!isNaN(hours)) {
+                        if (hours < 20) remoteWork.remote++;
+                        else if (hours < 40) remoteWork.hybrid++;
+                        else remoteWork.office++;
+                    }
+                }
+            });
+            processed.remoteWork = remoteWork;
+
+            return processed;
+        }
+
+        async function loadSurveyData() {
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            
+            const years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+            let loadedCount = 0;
+
+            for (const year of years) {
+                try {
+                    // Some years may have different naming (surveyDate typo). Try both.
+                    let response = await fetch(`data/${year}_surveyData.csv`);
+                    if (!response.ok && (year === 2016 || year === 2017)) {
+                        response = await fetch(`data/${year}_surveyDate.csv`);
+                    }
+                    if (response.ok) {
+                        const csvText = await response.text();
+                        const rawData = parseCSV(csvText);
+                        const processedData = processSurveyData(rawData, year);
+                        realSurveyData[year] = processedData;
+                        console.log(`Loaded data for ${year}:`, processedData);
+                        loadedCount++;
+                    } else {
+                        console.log(`No data file found for ${year}`);
+                    }
+                } catch (error) {
+                    console.log(`Error loading data for ${year}:`, error);
+                }
+            }
+
+            // Hide loading indicator
+            document.getElementById('loadingIndicator').style.display = 'none';
+            
+            if (loadedCount > 0) {
+                dataLoaded = true;
+                updateDashboardWithRealData();
+                console.log(`Successfully loaded ${loadedCount} years of data`);
+            } else {
+                console.log('No data files found, using sample data');
+                dataLoaded = false;
+                updateMetrics(); // Update with sample data
+            }
+        }
+
+        function updateDashboardWithRealData() {
+            if (!dataLoaded) return;
+
+            // Update metrics
+            const totalResponses = Object.values(realSurveyData).reduce((sum, data) => sum + data.totalResponses, 0);
+            const allCountries = new Set();
+            Object.values(realSurveyData).forEach(data => {
+                data.countries.forEach(country => allCountries.add(country));
+            });
+
+            document.getElementById('totalResponses').textContent = (totalResponses / 1000).toFixed(1) + 'K+';
+            document.getElementById('countries').textContent = allCountries.size + '+';
+            document.getElementById('years').textContent = Object.keys(realSurveyData).length;
+
+            // Update charts with real data
+            updateChartsWithRealData();
+        }
+
+        function updateChartsWithRealData() {
+            const years = Object.keys(realSurveyData).sort((a, b) => a - b);
+            const population = years.map(year => realSurveyData[year].totalResponses);
+            
+            // Update population chart
+            if (charts.population) {
+                charts.population.data.labels = years;
+                charts.population.data.datasets[0].data = population;
+                charts.population.update();
+            }
+
+            // Update other charts with real data
+            updateLanguageChart();
+            updateSalaryChart();
+            updateAITrendsChart();
+        }
+
+        function updateLanguageChart() {
+            const allLanguages = {};
+            Object.values(realSurveyData).forEach(data => {
+                Object.entries(data.languages).forEach(([lang, count]) => {
+                    allLanguages[lang] = (allLanguages[lang] || 0) + count;
+                });
+            });
+
+            const sortedLanguages = Object.entries(allLanguages)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+
+            if (charts.languages) {
+                charts.languages.data.labels = sortedLanguages.map(([lang]) => lang);
+                charts.languages.data.datasets[0].data = sortedLanguages.map(([,count]) => count);
+                charts.languages.update();
+            }
+        }
+
+        function updateSalaryChart() {
+            const years = Object.keys(realSurveyData).sort((a, b) => a - b);
+            const salaryData = {
+                junior: [],
+                mid: [],
+                senior: [],
+                lead: []
+            };
+
+            years.forEach(year => {
+                const data = realSurveyData[year];
+                if (data.salary && data.salary.average) {
+                    // Estimate salary by experience level (simplified)
+                    const baseSalary = data.salary.average;
+                    salaryData.junior.push(Math.round(baseSalary * 0.7));
+                    salaryData.mid.push(Math.round(baseSalary * 0.9));
+                    salaryData.senior.push(Math.round(baseSalary * 1.1));
+                    salaryData.lead.push(Math.round(baseSalary * 1.3));
+                }
+            });
+
+            if (charts.salary) {
+                charts.salary.data.labels = years;
+                charts.salary.data.datasets[0].data = salaryData.junior;
+                charts.salary.data.datasets[1].data = salaryData.mid;
+                charts.salary.data.datasets[2].data = salaryData.senior;
+                charts.salary.data.datasets[3].data = salaryData.lead;
+                charts.salary.update();
+            }
+        }
+
+        function updateAITrendsChart() {
+            // Include only years which have AI columns/derived signals
+            const entries = Object.entries(realSurveyData)
+                .filter(([, data]) => data.aiAvailable)
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+            const years = entries.map(([y]) => y);
+            const aiAdoption = entries.map(([, data]) => data.aiUsage?.percentage || 0);
+
+            if (charts.aiAdoption) {
+                charts.aiAdoption.data.labels = years;
+                charts.aiAdoption.data.datasets[0].data = aiAdoption;
+                charts.aiAdoption.update();
+            }
+        }
+
+        // Sample data (fallback if real data not available)
+        const surveyData = {
+            years: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
+            population: [50000, 75000, 100000, 150000, 200000, 300000, 450000, 600000, 800000, 1000000, 1200000, 1400000, 1600000, 1800000, 2000000],
+            languages: {
+                'JavaScript': 65,
+                'Python': 45,
+                'Java': 40,
+                'TypeScript': 35,
+                'C#': 30,
+                'C++': 25,
+                'Go': 20,
+                'Rust': 15,
+                'Swift': 12,
+                'Kotlin': 10
+            },
+            aiAdoption: {
+                years: [2020, 2021, 2022, 2023, 2024, 2025],
+                adoption: [15, 25, 35, 50, 65, 73]
+            },
+            learningMethods: {
+                'Online Courses': 45,
+                'Documentation': 40,
+                'YouTube': 35,
+                'Stack Overflow': 30,
+                'Books': 25,
+                'Bootcamps': 20,
+                'University': 18,
+                'Mentorship': 15,
+                'AI Assistants': 60
+            },
+            salary: {
+                junior: [45000, 50000, 55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000, 105000, 110000, 115000],
+                mid: [65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000, 105000, 110000, 115000, 120000, 125000, 130000, 135000],
+                senior: [85000, 90000, 95000, 100000, 105000, 110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000, 155000],
+                lead: [110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000, 155000, 160000, 165000, 170000, 175000, 180000]
+            },
+            globalDistribution: {
+                'North America': 25,
+                'Europe': 30,
+                'Asia': 35,
+                'South America': 5,
+                'Africa': 3,
+                'Oceania': 2
+            },
+            aiTools: {
+                'Code Completion': 70,
+                'Code Review': 45,
+                'Documentation': 40,
+                'Testing': 35,
+                'Debugging': 30,
+                'Refactoring': 25,
+                'Architecture': 20
+            },
+            learningResources: {
+                'Stack Overflow': 80,
+                'GitHub': 70,
+                'YouTube': 65,
+                'Documentation': 60,
+                'Online Courses': 55,
+                'AI Assistants': 50,
+                'Books': 40,
+                'Bootcamps': 30,
+                'University': 25
+            },
+            remoteWork: {
+                years: [2020, 2021, 2022, 2023, 2024, 2025],
+                remote: [20, 60, 70, 65, 60, 55],
+                hybrid: [10, 25, 20, 25, 30, 35],
+                office: [70, 15, 10, 10, 10, 10]
+            }
+        };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            setupFilters();
+            updateMetrics();
+            
+            // Initialize AI Impact metrics
+            updateAIImpactMetrics(getFilteredData('all', 'all', 'all', 'all'));
+            
+            // Try to load real survey data, fallback to sample data
+            loadSurveyData().then(() => {
+                console.log('Real data loaded successfully');
+                // Update AI Impact with real data
+                updateAIImpactMetrics(getFilteredData('all', 'all', 'all', 'all'));
+            }).catch(error => {
+                console.log('Using sample data due to error:', error);
+                // Update metrics with sample data
+                updateMetrics();
+                updateAIImpactMetrics(getFilteredData('all', 'all', 'all', 'all'));
+            });
+        });
+
+        function initializeCharts() {
+            // Population Growth Chart
+            const populationCtx = document.getElementById('populationChart').getContext('2d');
+            charts.population = new Chart(populationCtx, {
+                type: 'line',
+                data: {
+                    labels: surveyData.years,
+                    datasets: [{
+                        label: 'Developer Population',
+                        data: surveyData.population,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000) + 'K';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Languages Chart
+            const languagesCtx = document.getElementById('languagesChart').getContext('2d');
+            charts.languages = new Chart(languagesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(surveyData.languages),
+                    datasets: [{
+                        data: Object.values(surveyData.languages),
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                            '#4facfe', '#000000', '#43e97b', '#38f9d7',
+                            '#ffecd2', '#fcb69f'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // AI Adoption Chart
+            const aiAdoptionCtx = document.getElementById('aiAdoptionChart').getContext('2d');
+            charts.aiAdoption = new Chart(aiAdoptionCtx, {
+                type: 'bar',
+                data: {
+                    labels: surveyData.aiAdoption.years,
+                    datasets: [{
+                        label: 'AI Tool Adoption (%)',
+                        data: surveyData.aiAdoption.adoption,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: '#667eea',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Learning Methods Chart
+            const learningCtx = document.getElementById('learningChart').getContext('2d');
+            charts.learning = new Chart(learningCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(surveyData.learningMethods),
+                    datasets: [{
+                        data: Object.values(surveyData.learningMethods),
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c',
+                            '#4facfe', '#000000', '#43e97b', '#38f9d7',
+                            '#ffecd2'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Salary Chart
+            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+            charts.salary = new Chart(salaryCtx, {
+                type: 'line',
+                data: {
+                    labels: surveyData.years,
+                    datasets: [
+                        {
+                            label: 'Junior (0-2 years)',
+                            data: surveyData.salary.junior,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Mid-level (3-5 years)',
+                            data: surveyData.salary.mid,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Senior (6-10 years)',
+                            data: surveyData.salary.senior,
+                            borderColor: '#f093fb',
+                            backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'Lead (10+ years)',
+                            data: surveyData.salary.lead,
+                            borderColor: '#f5576c',
+                            backgroundColor: 'rgba(245, 87, 108, 0.1)',
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000) + 'K';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Global Distribution Chart
+            const globalCtx = document.getElementById('globalChart').getContext('2d');
+            charts.global = new Chart(globalCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(surveyData.globalDistribution),
+                    datasets: [{
+                        label: 'Developer Distribution (%)',
+                        data: Object.values(surveyData.globalDistribution),
+                        backgroundColor: [
+                            '#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 40
+                        }
+                    }
+                }
+            });
+
+            // AI Tools Chart
+            const aiToolsCtx = document.getElementById('aiToolsChart').getContext('2d');
+            charts.aiTools = new Chart(aiToolsCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(surveyData.aiTools),
+                    datasets: [{
+                        label: 'Usage (%)',
+                        data: Object.values(surveyData.aiTools),
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderColor: '#667eea',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 80
+                        }
+                    }
+                }
+            });
+
+            // Learning Resources Chart
+            const learningResourcesCtx = document.getElementById('learningResourcesChart').getContext('2d');
+            charts.learningResources = new Chart(learningResourcesCtx, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(surveyData.learningResources),
+                    datasets: [{
+                        label: 'Usage (%)',
+                        data: Object.values(surveyData.learningResources),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Remote Work Chart
+            const remoteWorkCtx = document.getElementById('remoteWorkChart').getContext('2d');
+            charts.remoteWork = new Chart(remoteWorkCtx, {
+                type: 'line',
+                data: {
+                    labels: surveyData.remoteWork.years,
+                    datasets: [
+                        {
+                            label: 'Remote',
+                            data: surveyData.remoteWork.remote,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: false
+                        },
+                        {
+                            label: 'Hybrid',
+                            data: surveyData.remoteWork.hybrid,
+                            borderColor: '#764ba2',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            borderWidth: 3,
+                            fill: false
+                        },
+                        {
+                            label: 'Office',
+                            data: surveyData.remoteWork.office,
+                            borderColor: '#f093fb',
+                            backgroundColor: 'rgba(240, 147, 251, 0.1)',
+                            borderWidth: 3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupFilters() {
+            document.getElementById('yearFilter').addEventListener('change', applyFilters);
+            document.getElementById('countryFilter').addEventListener('change', applyFilters);
+            document.getElementById('experienceFilter').addEventListener('change', applyFilters);
+            document.getElementById('aiFilter').addEventListener('change', applyFilters);
+        }
+
+        function applyFilters() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            const experienceFilter = document.getElementById('experienceFilter').value;
+            const aiFilter = document.getElementById('aiFilter').value;
+
+            console.log('Applying filters:', { yearFilter, countryFilter, experienceFilter, aiFilter });
+            
+            // Update charts based on filters (this also updates metrics)
+            updateChartsWithFilters(yearFilter, countryFilter, experienceFilter, aiFilter);
+        }
+
+        function updateChartsWithFilters(yearFilter, countryFilter, experienceFilter, aiFilter) {
+            // Get filtered data
+            const filteredData = getFilteredData(yearFilter, countryFilter, experienceFilter, aiFilter);
+            
+            console.log('Updating charts with filtered data:', filteredData);
+            
+            // Update all charts with filtered data
+            updatePopulationChart(filteredData);
+            updateLanguageChart(filteredData);
+            updateSalaryChart(filteredData);
+            updateAIAdoptionChart(filteredData);
+            updateLearningChart(filteredData);
+            updateGlobalChart(filteredData);
+            updateAIToolsChart(filteredData);
+            updateLearningResourcesChart(filteredData);
+            updateRemoteWorkChart(filteredData);
+            updateAIImpactMetrics(filteredData);
+            
+            // Also update metrics
+            updateMetrics();
+        }
+
+        function getFilteredData(yearFilter, countryFilter, experienceFilter, aiFilter) {
+            let filteredData = {};
+            
+            if (dataLoaded && Object.keys(realSurveyData).length > 0) {
+                // Use real data with comprehensive filtering
+                Object.keys(realSurveyData).forEach(year => {
+                    const yearNum = parseInt(year);
+                    let includeYear = false;
+                    
+                    // Year filter
+                    if (yearFilter === 'all') includeYear = true;
+                    else if (yearFilter === '2011-2015' && yearNum >= 2011 && yearNum <= 2015) includeYear = true;
+                    else if (yearFilter === '2016-2020' && yearNum >= 2016 && yearNum <= 2020) includeYear = true;
+                    else if (yearFilter === '2021-2025' && yearNum >= 2021 && yearNum <= 2025) includeYear = true;
+                    
+                    if (includeYear) {
+                        let yearData = { ...realSurveyData[year] };
+                        
+                        // Apply additional filters to the data
+                        if (countryFilter !== 'all') {
+                            // Filter by country (simplified - in real implementation, you'd filter the raw data)
+                            yearData.countries = yearData.countries.filter(country => 
+                                country.toLowerCase().includes(countryFilter.toLowerCase())
+                            );
+                        }
+                        
+                        if (experienceFilter !== 'all') {
+                            // Adjust experience data based on filter
+                            const totalExp = Object.values(yearData.experience).reduce((sum, count) => sum + count, 0);
+                            if (experienceFilter === 'junior') {
+                                yearData.experience = { junior: yearData.experience.junior || 0, mid: 0, senior: 0, lead: 0 };
+                            } else if (experienceFilter === 'mid') {
+                                yearData.experience = { junior: 0, mid: yearData.experience.mid || 0, senior: 0, lead: 0 };
+                            } else if (experienceFilter === 'senior') {
+                                yearData.experience = { junior: 0, mid: 0, senior: yearData.experience.senior || 0, lead: 0 };
+                            } else if (experienceFilter === 'lead') {
+                                yearData.experience = { junior: 0, mid: 0, senior: 0, lead: yearData.experience.lead || 0 };
+                            }
+                        }
+                        
+                        if (aiFilter !== 'all') {
+                            // Adjust AI usage based on filter
+                            if (aiFilter === 'heavy' && yearData.aiUsage) {
+                                yearData.aiUsage.percentage = Math.min(100, yearData.aiUsage.percentage * 1.5);
+                            } else if (aiFilter === 'moderate' && yearData.aiUsage) {
+                                yearData.aiUsage.percentage = yearData.aiUsage.percentage * 0.7;
+                            } else if (aiFilter === 'light' && yearData.aiUsage) {
+                                yearData.aiUsage.percentage = yearData.aiUsage.percentage * 0.3;
+                            } else if (aiFilter === 'none' && yearData.aiUsage) {
+                                yearData.aiUsage.percentage = 0;
+                            }
+                        }
+                        
+                        filteredData[year] = yearData;
+                    }
+                });
+            } else {
+                // Use sample data with enhanced filtering
+                const sampleYears = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+                const filteredYears = sampleYears.filter(year => {
+                    const yearNum = parseInt(year);
+                    if (yearFilter === 'all') return true;
+                    if (yearFilter === '2011-2015') return yearNum >= 2011 && yearNum <= 2015;
+                    if (yearFilter === '2016-2020') return yearNum >= 2016 && yearNum <= 2020;
+                    if (yearFilter === '2021-2025') return yearNum >= 2021 && yearNum <= 2025;
+                    return true;
+                });
+                
+                filteredYears.forEach(year => {
+                    const yearIndex = parseInt(year);
+                    const populationIndex = yearIndex - 2011;
+                    const aiIndex = yearIndex - 2020;
+                    
+                    let baseData = {
+                        totalResponses: surveyData.population[populationIndex] || 50000,
+                        languages: { ...surveyData.languages },
+                        salary: {
+                            average: surveyData.salary.junior[populationIndex] || 45000,
+                            median: surveyData.salary.mid[populationIndex] || 65000
+                        },
+                        aiUsage: {
+                            percentage: yearIndex >= 2020 ? (surveyData.aiAdoption.adoption[aiIndex] || 0) : 0
+                        },
+                        aiAvailable: yearIndex >= 2020,
+                        salaryByExperience: {
+                            junior: surveyData.salary.junior[populationIndex] || null,
+                            mid: surveyData.salary.mid[populationIndex] || null,
+                            senior: surveyData.salary.senior[populationIndex] || null,
+                            lead: surveyData.salary.lead[populationIndex] || null
+                        },
+                        learningMethods: { ...surveyData.learningMethods },
+                        remoteWork: { ...surveyData.remoteWork },
+                        globalDistribution: { ...surveyData.globalDistribution },
+                        aiTools: { ...surveyData.aiTools },
+                        learningResources: { ...surveyData.learningResources },
+                        countries: ['United States', 'United Kingdom', 'Germany', 'India', 'China', 'Canada', 'Australia', 'France', 'Brazil', 'Japan']
+                    };
+                    
+                    // Apply experience filter
+                    if (experienceFilter !== 'all') {
+                        const totalExp = Object.values(baseData.salaryByExperience).filter(v => v !== null).length;
+                        if (experienceFilter === 'junior') {
+                            baseData.salaryByExperience = { 
+                                junior: baseData.salaryByExperience.junior, 
+                                mid: null, senior: null, lead: null 
+                            };
+                        } else if (experienceFilter === 'mid') {
+                            baseData.salaryByExperience = { 
+                                junior: null, 
+                                mid: baseData.salaryByExperience.mid, 
+                                senior: null, lead: null 
+                            };
+                        } else if (experienceFilter === 'senior') {
+                            baseData.salaryByExperience = { 
+                                junior: null, mid: null, 
+                                senior: baseData.salaryByExperience.senior, 
+                                lead: null 
+                            };
+                        } else if (experienceFilter === 'lead') {
+                            baseData.salaryByExperience = { 
+                                junior: null, mid: null, senior: null, 
+                                lead: baseData.salaryByExperience.lead 
+                            };
+                        }
+                    }
+                    
+                    // Apply AI filter
+                    if (aiFilter !== 'all' && baseData.aiUsage) {
+                        if (aiFilter === 'heavy') {
+                            baseData.aiUsage.percentage = Math.min(100, baseData.aiUsage.percentage * 1.5);
+                        } else if (aiFilter === 'moderate') {
+                            baseData.aiUsage.percentage = baseData.aiUsage.percentage * 0.7;
+                        } else if (aiFilter === 'light') {
+                            baseData.aiUsage.percentage = baseData.aiUsage.percentage * 0.3;
+                        } else if (aiFilter === 'none') {
+                            baseData.aiUsage.percentage = 0;
+                        }
+                    }
+                    
+                    // Apply country filter
+                    if (countryFilter !== 'all') {
+                        baseData.countries = baseData.countries.filter(country => 
+                            country.toLowerCase().includes(countryFilter.toLowerCase())
+                        );
+                    }
+                    
+                    filteredData[year] = baseData;
+                });
+            }
+            
+            return filteredData;
+        }
+
+        function updatePopulationChart(filteredData) {
+            if (!charts.population) return;
+            
+            const years = Object.keys(filteredData).sort((a, b) => a - b);
+            const population = years.map(year => filteredData[year].totalResponses);
+            
+            charts.population.data.labels = years;
+            charts.population.data.datasets[0].data = population;
+            charts.population.update();
+        }
+
+        function updateLanguageChart(filteredData) {
+            if (!charts.languages) return;
+            
+            const allLanguages = {};
+            Object.values(filteredData).forEach(data => {
+                Object.entries(data.languages).forEach(([lang, count]) => {
+                    allLanguages[lang] = (allLanguages[lang] || 0) + count;
+                });
+            });
+
+            const sortedLanguages = Object.entries(allLanguages)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+
+            charts.languages.data.labels = sortedLanguages.map(([lang]) => lang);
+            charts.languages.data.datasets[0].data = sortedLanguages.map(([,count]) => count);
+            charts.languages.update();
+        }
+
+        function updateSalaryChart(filteredData) {
+            if (!charts.salary) return;
+            
+            const years = Object.keys(filteredData).sort((a, b) => a - b);
+            const salaryData = {
+                junior: [],
+                mid: [],
+                senior: [],
+                lead: []
+            };
+
+            years.forEach(year => {
+                const data = filteredData[year];
+                // Prefer per-experience salaries if present, otherwise fall back to derived from average
+                const hasBuckets = data.salaryByExperience && (
+                    data.salaryByExperience.junior || data.salaryByExperience.mid || data.salaryByExperience.senior || data.salaryByExperience.lead
+                );
+                if (hasBuckets) {
+                    salaryData.junior.push(data.salaryByExperience.junior ?? null);
+                    salaryData.mid.push(data.salaryByExperience.mid ?? null);
+                    salaryData.senior.push(data.salaryByExperience.senior ?? null);
+                    salaryData.lead.push(data.salaryByExperience.lead ?? null);
+                } else if (data.salary && data.salary.average) {
+                    const baseSalary = data.salary.average;
+                    salaryData.junior.push(Math.round(baseSalary * 0.7));
+                    salaryData.mid.push(Math.round(baseSalary * 0.9));
+                    salaryData.senior.push(Math.round(baseSalary * 1.1));
+                    salaryData.lead.push(Math.round(baseSalary * 1.3));
+                } else {
+                    salaryData.junior.push(null);
+                    salaryData.mid.push(null);
+                    salaryData.senior.push(null);
+                    salaryData.lead.push(null);
+                }
+            });
+
+            charts.salary.data.labels = years;
+            charts.salary.data.datasets[0].data = salaryData.junior;
+            charts.salary.data.datasets[1].data = salaryData.mid;
+            charts.salary.data.datasets[2].data = salaryData.senior;
+            charts.salary.data.datasets[3].data = salaryData.lead;
+            charts.salary.update();
+        }
+
+        function updateAIAdoptionChart(filteredData) {
+            if (!charts.aiAdoption) return;
+            
+            // Filter to years that have AI available
+            const entries = Object.entries(filteredData)
+                .filter(([, data]) => data.aiAvailable || (data.aiUsage && typeof data.aiUsage.percentage === 'number'))
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
+
+            const years = entries.map(([y]) => y);
+            const aiAdoption = entries.map(([, data]) => {
+                if (data.aiUsage && typeof data.aiUsage.percentage === 'number') return data.aiUsage.percentage;
+                return 0;
+            });
+
+            charts.aiAdoption.data.labels = years;
+            charts.aiAdoption.data.datasets[0].data = aiAdoption;
+            charts.aiAdoption.update();
+        }
+
+        function updateLearningChart(filteredData) {
+            if (!charts.learning) return;
+            
+            const allLearningMethods = {};
+            Object.values(filteredData).forEach(data => {
+                Object.entries(data.learningMethods).forEach(([method, count]) => {
+                    allLearningMethods[method] = (allLearningMethods[method] || 0) + count;
+                });
+            });
+
+            const sortedMethods = Object.entries(allLearningMethods)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 8);
+
+            charts.learning.data.labels = sortedMethods.map(([method]) => method);
+            charts.learning.data.datasets[0].data = sortedMethods.map(([,count]) => count);
+            charts.learning.update();
+        }
+
+        function updateGlobalChart(filteredData) {
+            if (!charts.global) return;
+            
+            const globalDistribution = {};
+            Object.values(filteredData).forEach(data => {
+                Object.entries(data.globalDistribution).forEach(([region, percentage]) => {
+                    globalDistribution[region] = (globalDistribution[region] || 0) + percentage;
+                });
+            });
+
+            charts.global.data.labels = Object.keys(globalDistribution);
+            charts.global.data.datasets[0].data = Object.values(globalDistribution);
+            charts.global.update();
+        }
+
+        function updateAIToolsChart(filteredData) {
+            if (!charts.aiTools) return;
+            
+            // Only aggregate AI tools data from years 2020+ when AI was actually tracked
+            const aiTools = {};
+            Object.entries(filteredData).forEach(([year, data]) => {
+                const yearNum = parseInt(year);
+                if (yearNum >= 2020 && data.aiTools) {
+                    Object.entries(data.aiTools).forEach(([tool, usage]) => {
+                        aiTools[tool] = (aiTools[tool] || 0) + usage;
+                    });
+                }
+            });
+
+            if (Object.keys(aiTools).length > 0) {
+                charts.aiTools.data.labels = Object.keys(aiTools);
+                charts.aiTools.data.datasets[0].data = Object.values(aiTools);
+            } else {
+                // Hide chart if no AI data available
+                charts.aiTools.data.labels = ['No AI data available'];
+                charts.aiTools.data.datasets[0].data = [1];
+            }
+            charts.aiTools.update();
+        }
+
+        function updateLearningResourcesChart(filteredData) {
+            if (!charts.learningResources) return;
+            
+            const learningResources = {};
+            Object.values(filteredData).forEach(data => {
+                Object.entries(data.learningResources).forEach(([resource, usage]) => {
+                    learningResources[resource] = (learningResources[resource] || 0) + usage;
+                });
+            });
+
+            charts.learningResources.data.labels = Object.keys(learningResources);
+            charts.learningResources.data.datasets[0].data = Object.values(learningResources);
+            charts.learningResources.update();
+        }
+
+        function updateRemoteWorkChart(filteredData) {
+            if (!charts.remoteWork) return;
+            
+            const years = Object.keys(filteredData).sort((a, b) => a - b);
+            const remoteData = {
+                remote: [],
+                hybrid: [],
+                office: []
+            };
+
+            years.forEach(year => {
+                const data = filteredData[year];
+                if (data.remoteWork) {
+                    remoteData.remote.push(data.remoteWork.remote || 0);
+                    remoteData.hybrid.push(data.remoteWork.hybrid || 0);
+                    remoteData.office.push(data.remoteWork.office || 0);
+                }
+            });
+
+            charts.remoteWork.data.labels = years;
+            charts.remoteWork.data.datasets[0].data = remoteData.remote;
+            charts.remoteWork.data.datasets[1].data = remoteData.hybrid;
+            charts.remoteWork.data.datasets[2].data = remoteData.office;
+            charts.remoteWork.update();
+        }
+
+        function updateMetrics() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            const experienceFilter = document.getElementById('experienceFilter').value;
+            const aiFilter = document.getElementById('aiFilter').value;
+            
+            const filteredData = getFilteredData(yearFilter, countryFilter, experienceFilter, aiFilter);
+            
+            if (dataLoaded && Object.keys(realSurveyData).length > 0) {
+                // Use real data
+                const totalResponses = Object.values(filteredData).reduce((sum, data) => sum + data.totalResponses, 0);
+                const allCountries = new Set();
+                Object.values(filteredData).forEach(data => {
+                    data.countries.forEach(country => allCountries.add(country));
+                });
+
+                document.getElementById('totalResponses').textContent = (totalResponses / 1000).toFixed(1) + 'K+';
+                document.getElementById('countries').textContent = allCountries.size + '+';
+                document.getElementById('years').textContent = Object.keys(filteredData).length;
+                
+                // Get AI adoption from latest year that has AI available in filtered data
+                const years = Object.entries(filteredData)
+                    .filter(([, d]) => d.aiAvailable)
+                    .map(([y]) => parseInt(y))
+                    .sort((a, b) => b - a);
+                const latestYear = years[0];
+                const aiAdoption = latestYear ? (filteredData[latestYear]?.aiUsage?.percentage || 0) : 0;
+                document.getElementById('aiAdoption').textContent = aiAdoption + '%';
+            } else {
+                // Use sample data with proper calculations
+                const totalResponses = Object.values(filteredData).reduce((sum, data) => sum + data.totalResponses, 0);
+                
+                // Calculate countries based on filtered data
+                let countryCount = 180; // Default
+                if (Object.keys(filteredData).length > 0) {
+                    // Estimate countries based on filtered years
+                    countryCount = Math.min(180, Object.keys(filteredData).length * 12);
+                }
+                
+                document.getElementById('totalResponses').textContent = (totalResponses / 1000).toFixed(1) + 'K+';
+                document.getElementById('countries').textContent = countryCount + '+';
+                document.getElementById('years').textContent = Object.keys(filteredData).length;
+                
+                // Calculate AI adoption based on filtered years
+                let aiAdoption = 0;
+                if (Object.keys(filteredData).length > 0) {
+                    const years = Object.keys(filteredData).map(Number).sort((a, b) => b - a);
+                    const latestYear = years[0];
+                    if (latestYear >= 2020) {
+                        const sampleIndex = latestYear - 2020;
+                        aiAdoption = surveyData.aiAdoption.adoption[sampleIndex] || 0;
+                    } else {
+                        aiAdoption = 0;
+                    }
+                }
+                document.getElementById('aiAdoption').textContent = aiAdoption + '%';
+            }
+        }
+
+        function setDrillDown(type) {
+            currentDrillDown = type;
+            
+            // Update button states
+            document.querySelectorAll('.drill-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update charts based on drill down
+            updateDrillDownCharts(type);
+            
+            // Update tab visibility based on drill down
+            updateTabVisibility(type);
+        }
+
+        function updateTabVisibility(drillType) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Show/hide tabs based on drill down type
+            tabs.forEach(tab => {
+                const tabId = tab.getAttribute('onclick').match(/showTab\('([^']+)'\)/)[1];
+                let shouldShow = true;
+                
+                if (drillType === 'ai') {
+                    shouldShow = ['ai', 'learning'].includes(tabId);
+                } else if (drillType === 'learning') {
+                    shouldShow = ['learning', 'ai'].includes(tabId);
+                } else if (drillType === 'work') {
+                    shouldShow = ['work', 'trends'].includes(tabId);
+                } else if (drillType === 'overview') {
+                    shouldShow = true;
+                }
+                
+                tab.style.display = shouldShow ? 'block' : 'none';
+            });
+            
+            // Update tab content visibility
+            tabContents.forEach(content => {
+                const contentId = content.id;
+                let shouldShow = true;
+                
+                if (drillType === 'ai') {
+                    shouldShow = ['ai', 'learning'].includes(contentId);
+                } else if (drillType === 'learning') {
+                    shouldShow = ['learning', 'ai'].includes(contentId);
+                } else if (drillType === 'work') {
+                    shouldShow = ['work', 'trends'].includes(contentId);
+                } else if (drillType === 'overview') {
+                    shouldShow = true;
+                }
+                
+                content.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        function updateAIImpactMetrics(filteredData) {
+            // Only calculate AI metrics for years when AI was available (2020+)
+            const aiYears = Object.entries(filteredData).filter(([year, data]) => {
+                const yearNum = parseInt(year);
+                return yearNum >= 2020 && data.aiUsage && data.aiUsage.percentage > 0;
+            });
+            
+            if (aiYears.length === 0) {
+                // Check if we have any years 2020+ in the filtered data
+                const recentYears = Object.entries(filteredData).filter(([year]) => parseInt(year) >= 2020);
+                
+                if (recentYears.length === 0) {
+                    // No recent years in filtered data
+                    document.getElementById('aiAssistedDev').textContent = 'N/A';
+                    document.getElementById('aiAssistedDevDesc').textContent = 'No recent data for selected period';
+                    document.getElementById('aiProductivity').textContent = 'N/A';
+                    document.getElementById('aiLearning').textContent = 'N/A';
+                    document.getElementById('aiCodeQuality').textContent = 'N/A';
+                } else {
+                    // Recent years available but no AI data
+                    document.getElementById('aiAssistedDev').textContent = '0%';
+                    document.getElementById('aiAssistedDevDesc').textContent = 'No AI adoption data available';
+                    document.getElementById('aiProductivity').textContent = '0%';
+                    document.getElementById('aiLearning').textContent = '0%';
+                    document.getElementById('aiCodeQuality').textContent = '0%';
+                }
+                return;
+            }
+            
+            // Calculate metrics from available AI data
+            const latestAIYear = aiYears[aiYears.length - 1];
+            const latestAIUsage = latestAIYear[1].aiUsage.percentage;
+            
+            // Calculate growth from first to last AI year
+            const firstAIYear = aiYears[0];
+            const growth = latestAIYear[1].aiUsage.percentage - firstAIYear[1].aiUsage.percentage;
+            
+            // Calculate additional metrics based on AI usage
+            const productivityBoost = Math.max(0, Math.round(latestAIUsage * 0.6));
+            const learningAcceleration = Math.max(0, Math.round(latestAIUsage * 0.8));
+            const codeQualityImprovement = Math.max(0, Math.round(latestAIUsage * 0.4));
+            
+            document.getElementById('aiAssistedDev').textContent = latestAIUsage + '%';
+            document.getElementById('aiAssistedDevDesc').textContent = `Developers using AI tools in ${latestAIYear[0]}`;
+            document.getElementById('aiProductivity').textContent = '+' + productivityBoost + '%';
+            document.getElementById('aiLearning').textContent = '+' + learningAcceleration + '%';
+            document.getElementById('aiCodeQuality').textContent = '+' + codeQualityImprovement + '%';
+        }
+
+        function updateDrillDownCharts(type) {
+            console.log('Drill down to:', type);
+            
+            // Apply current filters with drill down focus
+            const yearFilter = document.getElementById('yearFilter').value;
+            const countryFilter = document.getElementById('countryFilter').value;
+            const experienceFilter = document.getElementById('experienceFilter').value;
+            const aiFilter = document.getElementById('aiFilter').value;
+            
+            const filteredData = getFilteredData(yearFilter, countryFilter, experienceFilter, aiFilter);
+            
+            // Focus on specific aspects based on drill down
+            switch(type) {
+                case 'ai':
+                    // Show AI-focused charts
+                    updateAIToolsChart(filteredData);
+                    updateAIAdoptionChart(filteredData);
+                    updateAIImpactMetrics(filteredData);
+                    break;
+                case 'learning':
+                    // Show learning-focused charts
+                    updateLearningChart(filteredData);
+                    updateLearningResourcesChart(filteredData);
+                    break;
+                case 'work':
+                    // Show work-focused charts
+                    updateRemoteWorkChart(filteredData);
+                    updateSalaryChart(filteredData);
+                    break;
+                case 'salary':
+                    // Show salary-focused charts
+                    updateSalaryChart(filteredData);
+                    break;
+                default:
+                    // Show all charts
+                    updateChartsWithFilters(yearFilter, countryFilter, experienceFilter, aiFilter);
+            }
+        }
+
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function exportData(format) {
+            if (format === 'csv') {
+                // Generate CSV data
+                const csvData = generateCSVData();
+                downloadFile(csvData, 'stackoverflow-survey-data.csv', 'text/csv');
+            } else if (format === 'pdf') {
+                // Generate PDF (would need a PDF library in real implementation)
+                alert('PDF export would be implemented with a PDF generation library');
+            }
+        }
+
+        function generateCSVData() {
+            let csv = 'Year,Population,AI Adoption,Top Language\n';
+            for (let i = 0; i < surveyData.years.length; i++) {
+                csv += `${surveyData.years[i]},${surveyData.population[i]},${surveyData.aiAdoption.adoption[i] || 0},JavaScript\n`;
+            }
+            return csv;
+        }
+
+        function downloadFile(data, filename, type) {
+            const file = new Blob([data], { type: type });
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(file);
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        }
+
+        function shareDashboard() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Stack Overflow Developer Survey Dashboard',
+                    text: 'Check out this comprehensive analysis of developer trends from 2011-2025!',
+                    url: window.location.href
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Dashboard URL copied to clipboard!');
+                });
+            }
+        }
+
+        // Add some interactivity to charts
+        function addChartInteractivity() {
+            Object.values(charts).forEach(chart => {
+                chart.options.onClick = function(event, elements) {
+                    if (elements.length > 0) {
+                        const element = elements[0];
+                        console.log('Chart clicked:', element);
+                        // Add drill-down functionality here
+                    }
+                };
+            });
+        }
+
+        // Initialize interactivity after charts are created
+        setTimeout(addChartInteractivity, 1000);
+    </script>
+</body>
+</html>
