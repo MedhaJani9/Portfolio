@@ -100,4 +100,16 @@
   .text-container {
     text-align: justify;
   }
+  .section__pic-container img {
+    animation: none; /* stops floating animation */
+  }
+
+  section {
+    transition: none; /* prevents slow scroll animations on small devices */
+  }
+
+  .btn:hover,
+  .icon:hover {
+    transform: none; /* avoid hover animations on touch devices */
+  }
 }
