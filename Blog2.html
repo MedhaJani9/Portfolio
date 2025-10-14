@@ -671,8 +671,6 @@
                     <div class="drill-down-buttons">
                         <button class="drill-btn active" onclick="setDrillDown('overview')">Overview</button>
                         <button class="drill-btn" onclick="setDrillDown('ai')">AI Impact</button>
-                        <button class="drill-btn" onclick="setDrillDown('learning')">Learning Trends</button>
-                        <button class="drill-btn" onclick="setDrillDown('work')">Work Patterns</button>
                         <button class="drill-btn" onclick="setDrillDown('salary')">Salary Analysis</button>
                     </div>
                 </div>
@@ -2132,16 +2130,16 @@
             event.target.classList.add('active');
         }
 
-        function exportData(format) {
-            if (format === 'csv') {
-                // Generate CSV data
-                const csvData = generateCSVData();
-                downloadFile(csvData, 'stackoverflow-survey-data.csv', 'text/csv');
-            } else if (format === 'pdf') {
-                // Generate PDF (would need a PDF library in real implementation)
-                alert('PDF export would be implemented with a PDF generation library');
-            }
-        }
+        // function exportData(format) {
+        //     if (format === 'csv') {
+        //         // Generate CSV data
+        //         const csvData = generateCSVData();
+        //         downloadFile(csvData, 'stackoverflow-survey-data.csv', 'text/csv');
+        //     } else if (format === 'pdf') {
+        //         // Generate PDF (would need a PDF library in real implementation)
+        //         alert('PDF export would be implemented with a PDF generation library');
+        //     }
+        // }
 
         function generateCSVData() {
             let csv = 'Year,Population,AI Adoption,Top Language\n';
