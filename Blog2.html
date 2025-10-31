@@ -655,7 +655,7 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
+                <!-- <div class="filter-group">
                     <label for="aiFilter">AI Usage:</label>
                     <select id="aiFilter">
                         <option value="all">All Developers</option>
@@ -664,16 +664,16 @@
                         <option value="light">Light AI Users</option>
                         <option value="none">No AI Usage</option>
                     </select>
-                </div>
+                </div> -->
 
-                <div class="drill-down">
+                <!-- <div class="drill-down">
                     <h4>Drill Down Options</h4>
                     <div class="drill-down-buttons">
                         <button class="drill-btn active" onclick="setDrillDown('overview')">Overview</button>
                         <button class="drill-btn" onclick="setDrillDown('ai')">AI Impact</button>
                         <button class="drill-btn" onclick="setDrillDown('salary')">Salary Analysis</button>
                     </div>
-                </div>
+                </div> -->
             </div>
 
             <div class="charts-container">
@@ -1307,14 +1307,47 @@
                 }
             });
 
-            // Learning Methods Chart
+            // // Learning Methods Chart
+            // const learningCtx = document.getElementById('learningChart').getContext('2d');
+            // charts.learning = new Chart(learningCtx, {
+            //     type: 'pie',
+            //     data: {
+            //         labels: Object.keys(surveyData.learningMethods),
+            //         datasets: [{
+            //             data: Object.values(surveyData.learningMethods),
+            //             backgroundColor: [
+            //                 '#667eea', '#764ba2', '#f093fb', '#f5576c',
+            //                 '#4facfe', '#000000', '#43e97b', '#38f9d7',
+            //                 '#ffecd2'
+            //             ]
+            //         }]
+            //     },
+            //     options: {
+            //         responsive: true,
+            //         maintainAspectRatio: false,
+            //         plugins: {
+            //             legend: {
+            //                 position: 'bottom'
+            //             }
+            //         }
+            //     }
+            // });
+
+            // Learning Methods Chart (Percentage View)
             const learningCtx = document.getElementById('learningChart').getContext('2d');
+            const learningData = Object.values(surveyData.learningMethods);
+            const learningLabels = Object.keys(surveyData.learningMethods);
+
+            // Calculate total and percentages
+            const totalLearning = learningData.reduce((a, b) => a + b, 0);
+            const learningPercentages = learningData.map(v => ((v / totalLearning) * 100).toFixed(1));
+
             charts.learning = new Chart(learningCtx, {
                 type: 'pie',
                 data: {
-                    labels: Object.keys(surveyData.learningMethods),
+                    labels: learningLabels,
                     datasets: [{
-                        data: Object.values(surveyData.learningMethods),
+                        data: learningPercentages,
                         backgroundColor: [
                             '#667eea', '#764ba2', '#f093fb', '#f5576c',
                             '#4facfe', '#000000', '#43e97b', '#38f9d7',
@@ -1326,12 +1359,29 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const label = context.label || '';
+                                    const value = context.raw;
+                                    return `${label}: ${value}%`;
+                                }
+                            }
+                        },
                         legend: {
                             position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Preferred Learning Methods Among Developers (Percentage View)',
+                            font: {
+                                size: 16
+                            }
                         }
                     }
                 }
             });
+
 
             // Salary Chart
             const salaryCtx = document.getElementById('salaryChart').getContext('2d');
