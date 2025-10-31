@@ -181,7 +181,7 @@
 
         .ai-metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 25px;
         }
 
@@ -696,7 +696,7 @@
                 </div>
 
                 <div class="chart-card">
-                    <h3>Learning Methods Distribution</h3>
+                    <h3>Preferred Learning Methods Among Developers</h3>
                     <div class="chart-container">
                         <canvas id="learningChart"></canvas>
                     </div>
@@ -1268,10 +1268,23 @@
                     plugins: {
                         legend: {
                             position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataset = context.dataset;
+                                    const total = dataset.data.reduce((a, b) => a + b, 0);
+                                    const currentValue = dataset.data[context.dataIndex];
+                                    const percentage = ((currentValue / total) * 100).toFixed(1);
+                                    const label = context.label || '';
+                                    return `${label}: ${percentage}%`;
+                                }
+                            }
                         }
                     }
                 }
             });
+
 
             // AI Adoption Chart
             const aiAdoptionCtx = document.getElementById('aiAdoptionChart').getContext('2d');
@@ -1370,7 +1383,6 @@
                         },
                         title: {
                             display: true,
-                            text: 'Preferred Learning Methods Among Developers (Percentage View)',
                             font: {
                                 size: 16
                             }
