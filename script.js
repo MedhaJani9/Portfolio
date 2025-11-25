@@ -6,6 +6,26 @@ function toggleMenu() {
   icon.classList.toggle("open");
 }
 
+// Attach event listeners for hamburger menu links
+document.addEventListener("DOMContentLoaded", function () {
+  const menuLinks = document.querySelectorAll("#hamburger-nav .menu-links a");
+  menuLinks.forEach(link => {
+    link.addEventListener("click", function () {
+      // Close menu after click
+      const menu = document.querySelector(".menu-links");
+      const icon = document.querySelector(".hamburger-icon");
+      menu.classList.remove("open");
+      icon.classList.remove("open");
+    });
+  });
+
+  // Hamburger icon toggles menu
+  const hamburgerIcon = document.querySelector(".hamburger-icon");
+  if (hamburgerIcon) {
+    hamburgerIcon.addEventListener("click", toggleMenu);
+  }
+});
+
 // === SCROLL FADE-IN ANIMATION FOR SECTIONS ===
 const sections = document.querySelectorAll("section");
 
