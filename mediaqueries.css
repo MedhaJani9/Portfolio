@@ -10,6 +10,9 @@
   #projects {
     height: fit-content;
   }
+  .projects-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media screen and (max-width: 1200px) {
@@ -44,6 +47,9 @@
   }
   .about-containers {
     margin-top: 0;
+  }
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -111,5 +117,19 @@
   .btn:hover,
   .icon:hover {
     transform: none; /* avoid hover animations on touch devices */
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-card {
+    padding: 1rem;
+  }
+
+  .project-link {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
   }
 }
