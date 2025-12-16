@@ -56,3 +56,56 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     }
   });
 });
+
+// === VIDEO MODAL ===
+function playVideo(videoSource, videoTitle) {
+  // Create modal if it doesn't exist
+  let modal = document.getElementById("videoModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "videoModal";
+    modal.className = "video-modal";
+    modal.innerHTML = `
+      <div class="video-modal-content">
+        <span class="video-modal-close" onclick="closeVideoModal()">&times;</span>
+        <h2 class="video-modal-title" id="videoModalTitle"></h2>
+        <video id="videoPlayer" width="100%" controls style="max-width: 800px; border-radius: 8px;">
+          <source id="videoSource" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+  
+  // Set video source and title
+  document.getElementById("videoSource").src = videoSource;
+  document.getElementById("videoModalTitle").textContent = videoTitle;
+  
+  // Show modal
+  modal.style.display = "flex";
+  document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById("videoModal");
+  if (modal) {
+    modal.style.display = "none";
+    document.body.style.overflow = "auto"; // Re-enable scrolling
+    
+    // Stop video playback
+    const videoPlayer = document.getElementById("videoPlayer");
+    if (videoPlayer) {
+      videoPlayer.pause();
+      videoPlayer.currentTime = 0;
+    }
+  }
+}
+
+// Close modal when clicking outside the video content
+window.addEventListener("click", function (event) {
+  const modal = document.getElementById("videoModal");
+  if (event.target === modal) {
+    closeVideoModal();
+  }
+});
