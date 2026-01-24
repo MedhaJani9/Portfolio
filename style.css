@@ -185,8 +185,8 @@ section {
 
 .section__pic-container {
   display: flex;
-  height: 400px;
-  width: 400px;
+  height: 200px;
+  width: 200px;
   margin: auto 0;
 }
 
@@ -299,7 +299,7 @@ section {
 
 .about-pic {
   display: flex;
-  height: 300px;
+  height: 360px;
   width: 300px;
   margin: auto 0;
 }
