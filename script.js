@@ -79,8 +79,24 @@ function playVideo(videoSource, videoTitle) {
   }
   
   // Set video source and title
-  document.getElementById("videoSource").src = videoSource;
+  // document.getElementById("videoSource").src = videoSource;
+  // document.getElementById("videoModalTitle").textContent = videoTitle;
+  const videoPlayer = document.getElementById("videoPlayer");
+  const videoSrc = document.getElementById("videoSource");
+
+  // Stop & reset previous video
+  videoPlayer.pause();
+  videoSrc.src = "";
+  videoPlayer.load();
+
+  // Set new video
+  videoSrc.src = videoSource;
   document.getElementById("videoModalTitle").textContent = videoTitle;
+
+  // Force reload + play
+  videoPlayer.load();
+  videoPlayer.play();
+
   
   // Show modal
   modal.style.display = "flex";
@@ -88,18 +104,34 @@ function playVideo(videoSource, videoTitle) {
 }
 
 function closeVideoModal() {
+  // const modal = document.getElementById("videoModal");
+  // if (modal) {
+  //   modal.style.display = "none";
+  //   document.body.style.overflow = "auto"; // Re-enable scrolling
+    
+  //   // Stop video playback
+  //   const videoPlayer = document.getElementById("videoPlayer");
+  //   if (videoPlayer) {
+  //     videoPlayer.pause();
+  //     videoPlayer.currentTime = 0;
+  //   }
+  // }
   const modal = document.getElementById("videoModal");
+  const videoPlayer = document.getElementById("videoPlayer");
+  const videoSrc = document.getElementById("videoSource");
+
   if (modal) {
     modal.style.display = "none";
-    document.body.style.overflow = "auto"; // Re-enable scrolling
-    
-    // Stop video playback
-    const videoPlayer = document.getElementById("videoPlayer");
+    document.body.style.overflow = "auto";
+
     if (videoPlayer) {
       videoPlayer.pause();
       videoPlayer.currentTime = 0;
+      videoSrc.src = "";
+      videoPlayer.load();
     }
   }
+
 }
 
 // Close modal when clicking outside the video content
