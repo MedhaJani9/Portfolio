@@ -6,30 +6,45 @@ const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // === TOGGLE MOBILE MENU ===
-function toggleMenu() {
+function setMenuOpen(open) {
   const menu = document.querySelector(".menu-links");
   const icon = document.querySelector(".hamburger-icon");
+  if (!menu || !icon) return;
 
-  if (menu && icon) {
-    menu.classList.toggle("open");
-    icon.classList.toggle("open");
-  }
+  menu.classList.toggle("open", open);
+  icon.classList.toggle("open", open);
+  icon.setAttribute("aria-expanded", String(open));
+  icon.setAttribute("aria-label", open ? "Close menu" : "Open menu");
 }
 
-// Attach event listeners for hamburger menu links
-document.addEventListener("DOMContentLoaded", function () {
-  const menuLinks = document.querySelectorAll(".menu-links a");
-  menuLinks.forEach(link => {
-    link.addEventListener("click", function () {
-      // Close menu after click
-      const menu = document.querySelector(".menu-links");
-      const icon = document.querySelector(".hamburger-icon");
-      if (menu && icon) {
-        menu.classList.remove("open");
-        icon.classList.remove("open");
-      }
-    });
-  });
+function toggleMenu() {
+  const menu = document.querySelector(".menu-links");
+  if (menu) setMenuOpen(!menu.classList.contains("open"));
+}
+
+// Close the menu after picking a link, on Escape, or on a tap outside it
+document.querySelectorAll(".menu-links a").forEach(link => {
+  link.addEventListener("click", () => setMenuOpen(false));
+});
+
+document.addEventListener("keydown", e => {
+  const menu = document.querySelector(".menu-links.open");
+  if (e.key === "Escape" && menu) {
+    setMenuOpen(false);
+    document.querySelector(".hamburger-icon").focus();
+  }
+});
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".hamburger-menu")) setMenuOpen(false);
+});
+
+// Mark the current page in every nav so it's visible and announced to screen readers
+const currentPage = location.pathname.split("/").pop() || "index.html";
+document.querySelectorAll("nav a[href]").forEach(link => {
+  if (link.getAttribute("href") === currentPage && currentPage !== "index.html") {
+    link.setAttribute("aria-current", "page");
+  }
 });
 
 // === DARK / LIGHT MODE ===
@@ -104,7 +119,9 @@ const revealObserver =
             }
           });
         },
-        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+        // threshold 0: reveal as soon as an element starts entering the screen. A ratio
+        // threshold never fires for sections taller than the viewport (e.g. Projects on a phone).
+        { threshold: 0, rootMargin: "0px 0px -8% 0px" }
       )
     : null;
 
@@ -128,6 +145,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         top: target.offsetTop - 50,
         behavior: prefersReducedMotion ? "auto" : "smooth"
       });
+      // Move keyboard focus too (e.g. the skip link), not just the scroll position
+      if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
     }
   });
 });
@@ -352,7 +372,9 @@ function buildProjectFilters(container, grid) {
 
 if (typeof PROJECTS !== "undefined") {
   document.querySelectorAll("[data-projects]").forEach(grid => {
-    PROJECTS.forEach((project, i) => {
+    // data-limit shows a teaser (the homepage) instead of every project
+    const limit = Number(grid.dataset.limit) || PROJECTS.length;
+    PROJECTS.slice(0, limit).forEach((project, i) => {
       const card = buildProjectCard(project, i);
       grid.appendChild(card);
       observeReveal(card);

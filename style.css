@@ -60,6 +60,39 @@ p {
   text-justify: auto;
 }
 
+/* Keyboard users: hidden until focused, then jumps past the nav */
+.skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 3000;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: none;
+  color: var(--accent-text);
+  text-decoration: none;
+}
+
+main:focus {
+  outline: none;
+}
+
+/* Visible focus ring for every link and button when using a keyboard */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -167,13 +200,24 @@ a:hover {
   gap: 1rem;
 }
 
+/* A real <button>: 44×44 tap area around the 30×24 icon */
 .hamburger-icon {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 24px;
-  width: 30px;
+  box-sizing: border-box;
+  height: 44px;
+  width: 44px;
+  padding: 10px 7px;
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
   cursor: pointer;
+}
+
+.hamburger-icon:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .hamburger-icon span {
@@ -183,26 +227,41 @@ a:hover {
   transition: all 0.3s ease-in-out;
 }
 
+/* Dropdown panel; visibility:hidden keeps closed links out of the tab order */
 .menu-links {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.5rem);
   right: 0;
-  background-color: var(--bg);
-  width: fit-content;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease-in-out;
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px var(--shadow-strong);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  /* hide only after the fade-out finishes */
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
   z-index: 1000;
 }
 
 .menu-links a {
   display: block;
-  padding: 10px;
-  text-align: center;
-  font-size: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  font-size: 1.15rem;
   color: var(--text);
   text-decoration: none;
-  transition: all 0.3s ease-in-out;
+  transition: background-color 0.2s ease;
+}
+
+.menu-links a:hover,
+.menu-links a:focus-visible {
+  background-color: var(--chip-bg);
+  color: var(--text);
+  text-decoration: none;
 }
 
 .menu-links li {
@@ -210,7 +269,20 @@ a:hover {
 }
 
 .menu-links.open {
-  max-height: 300px;
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  /* links are reachable by Tab the moment the menu opens */
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s;
+}
+
+/* Current page */
+.nav-links a[aria-current="page"],
+.menu-links a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 0.5rem;
 }
 
 .hamburger-icon.open span:first-child {
@@ -356,9 +428,19 @@ section {
   font-size: 1rem;
   font-weight: 600;
   transition: all 300ms ease;
-  padding: 1rem;
-  width: 12rem;
+  padding: 1rem 1.5rem;
+  min-width: 12rem;
   border-radius: 2rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-sizing: border-box;
 }
 
 .btn-color-1,
@@ -816,6 +898,8 @@ article .icon {
 }
 
 .project-placeholder__tags {
+  padding: 0 1rem;
+  text-align: center;
   font-size: 0.85rem;
   letter-spacing: 0.04em;
   opacity: 0.75;
@@ -994,7 +1078,33 @@ html.modal-open {
 }
 
 
+.projects-more {
+  margin-top: 2.5rem;
+}
+
 /* Blog SECTION */
+.blog-article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  line-height: 1.75;
+}
+
+.blog-article ul {
+  padding-left: 1.25rem;
+}
+
+.blog-figure {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.blog-chart {
+  width: min(100%, 560px);
+  height: auto;
+  border-radius: 0.75rem;
+}
+
 .blog-title a {
   text-decoration: none;
   color: var(--text);

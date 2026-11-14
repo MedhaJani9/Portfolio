@@ -19,6 +19,7 @@
     </script>
   </head>
 <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
     <nav id="desktop-nav">
       <div class="logo"><a href="index.html">Medha Jani</a></div>
       <div>
@@ -36,22 +37,23 @@
       <div class="logo"><a href="index.html">Medha Jani</a></div>
       <div class="hamburger-menu">
         <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button>
-        <div class="hamburger-icon" onclick="toggleMenu()">
+        <button type="button" class="hamburger-icon" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMenu()">
           <span></span>
           <span></span>
           <span></span>
-        </div>
-        <div class="menu-links">
+        </button>
+        <ul class="menu-links" id="mobile-menu">
           <li><a href="about.html">About</a></li>
           <li><a href="skills.html">Skills</a></li>
           <li><a href="projects.html">Projects</a></li>
           <li><a href="blogs.html">Blogs</a></li>
           <li><a href="contact.html">Contact</a></li>
-        </div>
+        </ul>
       </div>
     </nav>
+    <main id="main" tabindex="-1">
 
-     <div class="text-container" style="margin-left: 70px; margin-right: 70px;">
+     <div class="text-container blog-article">
         <p>
             <h2 style="font-weight: bold;"> How AI-driven approach is perceived by developers</h2><br />
 Artificial Intelligence is no longer a distant frontier—it’s embedded in the daily workflows of developers across the globe. But how do developers actually feel about AI? Are they embracing it as a productivity booster, or approaching it with caution? To explore this, I analyzed the 2023 Stack Overflow Developer Survey, focusing on responses related to AI tools, sentiments, perceived benefits, and future expectations.<br /> 
@@ -69,8 +71,8 @@ Let’s dive into the findings and ask some critical questions along the way.<br
 
                     <li>No, but I plan to — 8,408 developers</li>
                 </ul><br />
-                <div style="text-align: center;">
-                    <img src="./assets/AI-Usage-Chart.png" alt="AI Usage Chart" style="width: 50%; height: auto;" />
+                <div class="blog-figure">
+                    <img src="./assets/AI-Usage-Chart.png" alt="AI Usage Chart" class="blog-chart" />
                 </div><br />
 
 This breakdown reveals that over twice as many developers are already using AI tools compared to those who have no intention of adopting them. That’s a strong signal that AI is no longer experimental—it’s becoming mainstream.
@@ -95,8 +97,8 @@ But what’s even more interesting is the 8,000+ developers who are on the verge
                         <li>Other</li>
                     </ul><br />
 
-                    <div style="text-align: center;">
-                        <img src="./assets/Perceived-Benefits-of-AI.png" alt="AI Sentiment Chart" style="width: 60%; height: auto;" />
+                    <div class="blog-figure">
+                        <img src="./assets/Perceived-Benefits-of-AI.png" alt="AI Sentiment Chart" class="blog-chart" />
                     </div><br />
 
 
@@ -112,8 +114,8 @@ But what’s even more interesting is the 8,000+ developers who are on the verge
             <h2>Developer Sentiment Toward Artificial Intelligence</h2>
 
 
-                  <div style="text-align: center;">
-                        <img src="./assets/AISentiment.png" alt="AI Sentiment Chart" style="width: 60%; height: auto;" />
+                  <div class="blog-figure">
+                        <img src="./assets/AISentiment.png" alt="AI Sentiment Chart" class="blog-chart" />
                   </div><br />
 Nearly 72% of developers view AI favorably or very favorably, showing strong optimism toward its integration in development workflows. Only a small minority (about 6%) hold negative views, while 19% are indifferent.</h2>
 <br /><br />
@@ -122,6 +124,7 @@ Nearly 72% of developers view AI favorably or very favorably, showing strong opt
                     
             </p>
           </div>
+    </main>
      <footer>
       <nav>
         <div class="nav-links-container">

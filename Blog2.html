@@ -560,6 +560,7 @@
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
     <nav id="desktop-nav">
       <div class="logo"><a href="index.html">Medha Jani</a></div>
       <div>
@@ -575,20 +576,21 @@
      <nav id="hamburger-nav">
       <div class="logo"><a href="index.html">Medha Jani</a></div>
       <div class="hamburger-menu">
-        <div class="hamburger-icon" onclick="toggleMenu()">
+        <button type="button" class="hamburger-icon" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu" onclick="toggleMenu()">
           <span></span>
           <span></span>
           <span></span>
-        </div>
-                <div class="menu-links">
+        </button>
+                <ul class="menu-links" id="mobile-menu">
                     <li><a href="about.html">About</a></li>
                     <li><a href="skills.html">Skills</a></li>
                     <li><a href="projects.html">Projects</a></li>
                     <li><a href="blogs.html">Blogs</a></li>
                     <li><a href="contact.html">Contact</a></li>
-                </div>
+                </ul>
       </div>
     </nav>
+    <main id="main" tabindex="-1">
     <div class="container">
         <div class="header">
             <h1> Stack Overflow Developer Survey Dashboard</h1>
@@ -817,6 +819,7 @@
             <button class="export-btn" onclick="shareDashboard()">🔗 Share Dashboard</button>
         </div>
     </div>
+    </main>
     <footer>
       <nav>
         <div class="nav-links-container">
