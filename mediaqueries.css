@@ -54,9 +54,11 @@
 }
 
 @media screen and (max-width: 600px) {
-  #contact,
   footer {
     height: 40vh;
+  }
+  #contact {
+    min-height: 40vh;
   }
   #profile {
     height: 83vh;
@@ -110,8 +112,21 @@
     animation: none; /* stops floating animation */
   }
 
-  section {
-    transition: none; /* prevents slow scroll animations on small devices */
+  .js section,
+  .js .reveal {
+    transition-duration: 0.45s; /* snappier reveals on small devices */
+  }
+
+  .project-modal__body {
+    padding: 1.25rem;
+  }
+
+  .project-modal__title {
+    font-size: 1.35rem;
+  }
+
+  .contact-form {
+    padding: 1.25rem;
   }
 
   .btn:hover,

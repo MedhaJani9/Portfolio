@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="mediaqueries.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script>
+      // Apply the saved (or system) theme before first paint to avoid a flash
+      document.documentElement.classList.add("js");
+      try {
+        var theme = localStorage.getItem("theme") ||
+          (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
   </head>
 <body>
     <nav id="desktop-nav">
@@ -19,12 +28,14 @@
           <li><a href="projects.html">Projects</a></li>
           <li><a href="blogs.html">Blogs</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button></li>
         </ul>
       </div>
     </nav>
      <nav id="hamburger-nav">
       <div class="logo"><a href="index.html">Medha Jani</a></div>
       <div class="hamburger-menu">
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle dark mode"><i class="fas fa-moon" aria-hidden="true"></i></button>
         <div class="hamburger-icon" onclick="toggleMenu()">
           <span></span>
           <span></span>
@@ -49,9 +60,36 @@
             alt="LinkedIn icon"
             class="icon contact-icon"
           />
-          <p><a href="https://www.linkedin.com/in/medha-jani-a5b889236/" target="_blank">LinkedIn</a></p>
+          <p><a href="https://www.linkedin.com/in/medha-jani-a5b889236/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+        </div>
+        <div class="contact-info-container">
+          <img
+            src="./assets/github.png"
+            alt="GitHub icon"
+            class="icon contact-icon"
+          />
+          <p><a href="https://github.com/MedhaJani9" target="_blank" rel="noopener noreferrer">GitHub</a></p>
         </div>
       </div>
+      <form class="contact-form" data-contact-form>
+        <div class="form-field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required />
+        </div>
+        <div class="form-field">
+          <label for="cf-email">Your email</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required />
+        </div>
+        <div class="form-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required></textarea>
+        </div>
+        <!-- Spam trap: hidden from people, bots fill it in -->
+        <input type="text" name="_gotcha" class="form-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <input type="hidden" name="_subject" value="New message from your portfolio" />
+        <button type="submit" class="btn btn-color-1">Send Message</button>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
     </section>
     <footer>
       <nav>
@@ -65,7 +103,7 @@
           </ul>
         </div>
       </nav>
-      <p>Copyright &#169; 2025 Medha Jani. All Rights Reserved.</p>
+      <p>Copyright &#169; 2026 Medha Jani. All Rights Reserved.</p>
     </footer>
     <script src="script.js"></script>
   </body>
