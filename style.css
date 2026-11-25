@@ -493,6 +493,10 @@ a.btn {
   display: flex;
 }
 
+.text-container p + p {
+  margin-top: 1rem;
+}
+
 .about-pic {
   display: flex;
   height: 360px;
@@ -1157,12 +1161,13 @@ html.modal-open {
   height: 2.5rem;
 }
 
-/* CONTACT FORM */
+/* CONTACT MESSAGE CARD (links to the Google Form) */
 
-.contact-form {
+.contact-message-card {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 1rem;
   width: min(600px, 100%);
   margin: 1rem auto 2rem;
   padding: 2rem;
@@ -1170,74 +1175,15 @@ html.modal-open {
   border-radius: 2rem;
   border: 0.1rem solid var(--border);
   background: var(--surface-alt);
-}
-
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.form-field label {
-  font-weight: 500;
-}
-
-.form-field input,
-.form-field textarea {
-  font: inherit;
-  padding: 0.8rem 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-field textarea {
-  min-height: 140px;
-  resize: vertical;
-}
-
-.form-field input:focus,
-.form-field textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--chip-bg);
-}
-
-.form-honeypot {
-  display: none;
-}
-
-.contact-form .btn {
-  align-self: center;
-}
-
-.contact-form .btn:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.form-status {
-  min-height: 1.5em;
   text-align: center;
-  font-weight: 500;
 }
 
-.form-status.is-success {
-  color: #1a8f4c;
+.contact-message-title {
+  font-size: 1.5rem;
 }
 
-.form-status.is-error {
-  color: #c0392b;
-}
-
-:root[data-theme="dark"] .form-status.is-success {
-  color: #5fd394;
-}
-
-:root[data-theme="dark"] .form-status.is-error {
-  color: #ff8a7a;
+.contact-message-card p {
+  line-height: 1.7;
 }
 
 /* FOOTER SECTION */

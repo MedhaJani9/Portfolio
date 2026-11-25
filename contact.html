@@ -73,25 +73,20 @@
           <p><a href="https://github.com/MedhaJani9" target="_blank" rel="noopener noreferrer">GitHub</a></p>
         </div>
       </div>
-      <form class="contact-form" data-contact-form>
-        <div class="form-field">
-          <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" autocomplete="name" required />
-        </div>
-        <div class="form-field">
-          <label for="cf-email">Your email</label>
-          <input id="cf-email" name="email" type="email" autocomplete="email" required />
-        </div>
-        <div class="form-field">
-          <label for="cf-message">Message</label>
-          <textarea id="cf-message" name="message" required></textarea>
-        </div>
-        <!-- Spam trap: hidden from people, bots fill it in -->
-        <input type="text" name="_gotcha" class="form-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
-        <input type="hidden" name="_subject" value="New message from your portfolio" />
-        <button type="submit" class="btn btn-color-1">Send Message</button>
-        <p class="form-status" role="status" aria-live="polite"></p>
-      </form>
+      <!-- Contact form: a Google Form, opened in a new tab. Embedding it in the page makes
+           Google ask visitors to sign in, so we link to it instead. Responses are emailed
+           to Medha, and senders get a copy of their message. -->
+      <div class="contact-message-card">
+        <h2 class="contact-message-title">Send me a message</h2>
+        <p>
+          Have a question, an opportunity, or just want to say hi? Fill out this short form
+          and I'll get back to you. You'll receive a copy of your message by email.
+        </p>
+        <a class="btn btn-color-1" href="https://forms.gle/3EZwG2aKyGBLAFAP9" target="_blank" rel="noopener noreferrer">
+          <i class="fas fa-paper-plane" aria-hidden="true"></i> Write a message
+          <span class="visually-hidden">(opens in a new tab)</span>
+        </a>
+      </div>
     </section>
     </main>
     <footer>

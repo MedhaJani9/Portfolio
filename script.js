@@ -1,8 +1,3 @@
-// === CONTACT FORM CONFIG ===
-// Create a free form at https://formspree.io, then paste its endpoint here.
-// Submissions are emailed to you; your address is never shown on the site.
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
-
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // === TOGGLE MOBILE MENU ===
@@ -383,40 +378,3 @@ if (typeof PROJECTS !== "undefined") {
     if (filters) buildProjectFilters(filters, grid);
   });
 }
-
-// === CONTACT FORM ===
-document.querySelectorAll("[data-contact-form]").forEach(form => {
-  const status = form.querySelector(".form-status");
-  const submit = form.querySelector('button[type="submit"]');
-
-  function showStatus(message, type) {
-    status.textContent = message;
-    status.className = `form-status is-${type}`;
-  }
-
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-
-    if (FORMSPREE_ENDPOINT.includes("YOUR_FORM_ID")) {
-      showStatus("The contact form isn't set up yet. Please reach out on LinkedIn for now.", "error");
-      return;
-    }
-
-    submit.disabled = true;
-    showStatus("Sending…", "info");
-    try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: "POST",
-        body: new FormData(form),
-        headers: { Accept: "application/json" },
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      form.reset();
-      showStatus("Thanks! Your message was sent — I'll get back to you soon.", "success");
-    } catch (err) {
-      showStatus("Sorry, something went wrong. Please try again or message me on LinkedIn.", "error");
-    } finally {
-      submit.disabled = false;
-    }
-  });
-});
