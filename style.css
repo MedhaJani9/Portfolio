@@ -352,15 +352,14 @@ section {
   }
 }
 
+/* Headshot: rounded, with a soft shadow, and no floating animation */
 #profile .section__pic-container img {
   align-self: center;
   max-width: 100%;
   height: auto;
-}
-
-/* The profile photo has a white background, so frame it as a card in dark mode */
-:root[data-theme="dark"] #profile .section__pic-container img {
   border-radius: 2rem;
+  box-shadow: 0 16px 40px var(--shadow-strong);
+  animation: none;
 }
 
 .section__text p {
